@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Your Shopping Cart</h2>
+        
+        {% if cart_items %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>  <!-- Correctly accessing product attributes -->
+                            <td>${{ item.product.price }}</td>
+                            <td>
+                                <input type="number" id="quantity-{{ item.id }}" value="{{ item.quantity }}" min="1" onchange="updateQuantity('{{ item.id }}', this.value)">
+                            </td>
+                            <td>${{ item.product.price|floatformat:2 }}</td>  <!-- Make sure subtotal calculation is correct -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h4>Total: ${{ total_price|floatformat:2 }}</h4>
+            <button onclick="window.location.href='/'" class="btn btn-success">Continue Shopping</button>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <script>
+    function updateQuantity(productId, quantity) {
+        fetch(`/update-quantity/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token
+            },
+            body: JSON.stringify({ 'quantity': quantity })
+        }).then(response => {
+            if (response.ok) {
+                location.reload();  // Reload the cart to reflect the updated quantities and totals
+            } else {
+                alert("Failed to update quantity.");
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while updating the quantity.");
+        });
+    }
+    </script>
+</body>
+</html>

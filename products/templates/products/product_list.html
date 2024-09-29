@@ -1,0 +1,77 @@
+<!-- products/templates/product_list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Product List</h1>
+        
+        <!-- Sorting Options -->
+        <div class="mb-4">
+            <label for="sort">Sort by:</label>
+            <select id="sort" onchange="sortProducts()">
+                <option value="">Select</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+            </select>
+        </div>
+
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ product.image }}" class="card-img-top" alt="{{ product.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.title }}</h5>
+                            <p class="card-text">Price: ${{ product.price }}</p>
+    
+                            <button class="btn btn-primary" onclick="addToCart(product.id)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function sortProducts() {
+            const sortValue = document.getElementById('sort').value;
+            // Check if a sort value is selected
+            if (sortValue) {
+                window.location.href = '?sort=' + sortValue; // Redirect to the same page with sort parameter
+            }
+        }
+
+        function addToCart(productId) {
+
+            console.log('Adding product to cart:', productId);
+            // Make a POST request to add the product to the cart
+            fetch(`/add-to-cart/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Product ' + productId + ' added to cart!'); // Placeholder alert
+                } else {
+                    alert('Failed to add product to cart.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding product to cart.');
+            });
+        }
+    </script>
+</body>
+</html>

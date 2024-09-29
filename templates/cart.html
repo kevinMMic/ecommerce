@@ -1,0 +1,39 @@
+<h1>Shopping Cart2</h1>
+<ul>
+    {% for item in cart_items %}
+        <li>
+            {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }} 
+            <form action="{% url 'update_quantity' item.id %}" method="POST">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                <button type="submit">Update</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+<p>Total Price: ${{ total_price }}</p>
+
+<a href="{% url 'checkout' %}">Proceed to Checkout</a>
+
+<script>
+    const csrfToken = '{{ csrf_token }}';
+
+    function updateQuantity(itemId, quantity) {
+        fetch(`/update-quantity/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ 'quantity': quantity })
+        }).then(response => {
+            if (response.ok) {
+                location.reload();  // Reload the cart to reflect changes
+            } else {
+                alert('Failed to update quantity.');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
