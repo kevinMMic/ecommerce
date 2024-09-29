@@ -1,0 +1,20 @@
+E-commerce Platform
+This project is a simple e-commerce platform built with Django that provides product browsing, shopping cart functionality, and integrates with Stripe for payment processing. 
+Users can browse products, add them to a cart, and proceed to checkout for secure payments. 
+The project uses session-based cart functionality and Stripe’s API for managing payments.
+
+Features
+Product Listing: Users can browse through available products.
+Shopping Cart: Users can add products to their cart, update quantities, and remove items.
+Stripe Payment Integration: Secure payment process using Stripe API for creating checkout sessions.
+Session-based Cart: Cart functionality is session-based for both anonymous and authenticated users (authentication is not implemented).
+
+Installation Guide
+
+1. git clone https://github.com/your-username/ecommerce-project.git
+2. cd ecommerce-project
+3. pip install django stripe
+4. export STRIPE_TEST_PUBLIC_KEY=your_public_key
+5. export STRIPE_TEST_SECRET_KEY=your_secret_key
+6. python manage.py migrate
+7. python manage.py runserver
